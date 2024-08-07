@@ -54,6 +54,7 @@ jobs:
         shell: pwsh
         run: |
           make compile-windows
+          make test-all
 
       - name: Compile on macOS
         if: matrix.os == 'macos-latest'

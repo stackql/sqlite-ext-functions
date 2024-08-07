@@ -9,7 +9,6 @@ Extended SQLite functions for StackQL providing additional capabilities for JSON
 - [Installation](#installation)
 - [Usage](#usage)
 - [Development](#development)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Introduction

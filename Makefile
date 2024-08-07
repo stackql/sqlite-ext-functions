@@ -56,7 +56,8 @@ test-all:
 # fails if grep does find a failed test case
 test:
 	@echo "Testing suite: $(suite)"
-	@sqlite3 -init $(LOAD_SCRIPT) < test/$(suite).sql > test.log
+	# @sqlite3 -init $(LOAD_SCRIPT) < test/$(suite).sql > test.log
+	@sqlite3 < test/$(suite).sql > test.log
 	@cat test.log | (! grep -Ex "[0-9_]+.[^1]")
 
 clean:

@@ -1,7 +1,7 @@
 -- Copyright (c) 2024 StackQL Studios, MIT License
 -- https://github.com/stackql
 
-.load dist/regexp
+.load ./dist/regexp
 
 -- Test regexp_like with null inputs
 select '1_01', regexp_like(null, 'pattern') is null;

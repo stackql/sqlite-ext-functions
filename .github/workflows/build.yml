@@ -17,7 +17,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-latest]
+        # os: [ubuntu-20.04, windows-latest, macos-latest]
+        os: [macos-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -67,6 +68,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           make compile-macos
+          sqlite3 --help
           chmod +x dist/json_equal.dylib
           chmod +x dist/regexp.dylib
           chmod +x dist/split_part.dylib

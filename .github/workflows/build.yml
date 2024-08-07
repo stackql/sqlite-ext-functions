@@ -17,8 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-20.04, windows-latest, macos-latest]
-        os: [windows-latest]
+        os: [ubuntu-20.04, windows-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -58,12 +57,18 @@ jobs:
         shell: pwsh
         run: |
           make compile-windows
+          Write-Host "Running json_equal tests..."
           Get-Content test/json_equal.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
+          Write-Host "json_equal tests completed successfully." 
+          Write-Host "Running regexp tests..."
           Get-Content test/regexp.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
+          Write-Host "regexp tests completed successfully." 
+          Write-Host "Running split_part tests..."
           Get-Content test/split_part.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
+          Write-Host "split_part tests completed successfully." 
 
       - name: Compile and test on macOS
         if: matrix.os == 'macos-latest'

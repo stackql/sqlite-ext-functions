@@ -40,6 +40,11 @@ compile-macos-arm64:
 	gcc -O2 -fPIC -dynamiclib -Isrc -target arm64-apple-macos12 src/regexp/*.c -o dist/regexp_arm64.dylib
 	gcc -O2 -fPIC -dynamiclib -Isrc -target arm64-apple-macos12 src/split_part/*.c -o dist/split_part_arm64.dylib
 
+compile-macos-universal: compile-macos-x86 compile-macos-arm64
+	lipo -create -output dist/json_equal.dylib dist/json_equal_x86.dylib dist/json_equal_arm64.dylib
+	lipo -create -output dist/regexp.dylib dist/regexp_x86.dylib dist/regexp_arm64.dylib
+	lipo -create -output dist/split_part.dylib dist/split_part_x86.dylib dist/split_part_arm64.dylib
+
 pack-linux:
 	zip -j dist/stackql-sqlite-ext-functions-$(version)-linux-amd64.zip dist/*.so
 

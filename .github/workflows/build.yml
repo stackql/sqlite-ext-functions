@@ -76,14 +76,8 @@ jobs:
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
           Write-Host "split_part tests completed successfully." 
 
-      - name: Compile and test on macOS (AMD64)
-        if: matrix.os == 'macos-latest' && matrix.arch == 'amd64'
+      - name: Compile and test on macOS
+        if: matrix.os == 'macos-latest'
         run: |
-          make compile-macos-x86
-          make test-all
-
-      - name: Compile and test on macOS (ARM64)
-        if: matrix.os == 'macos-latest' && matrix.arch == 'arm64'
-        run: |
-          make compile-macos-arm64
+          make compile-macos-universal
           make test-all

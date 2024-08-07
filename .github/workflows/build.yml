@@ -69,7 +69,4 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           make compile-macos
-          chmod +x dist/json_equal.dylib
-          chmod +x dist/regexp.dylib
-          chmod +x dist/split_part.dylib
           make test-all

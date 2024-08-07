@@ -20,7 +20,7 @@ jobs:
         os: [ubuntu-20.04, windows-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4
 
       - name: Install dependencies on Linux
         if: matrix.os == 'ubuntu-20.04'
@@ -54,11 +54,11 @@ jobs:
         shell: pwsh
         run: |
           make compile-windows
-          ./dist/sqlite3.exe < test/json_equal.sql > test.log
+          sqlite3.exe -init test/inc/load_ext_windows.sql < test/json_equal.sql > test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
-          ./dist/sqlite3.exe < test/regexp.sql > test.log
+          sqlite3.exe -init test/inc/load_ext_windows.sql < test/regexp.sql > test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
-          ./dist/sqlite3.exe < test/split_part.sql > test.log
+          sqlite3.exe -init test/inc/load_ext_windows.sql < test/split_part.sql > test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
 
       - name: Compile and test on macOS

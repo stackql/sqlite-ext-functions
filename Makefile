@@ -9,6 +9,18 @@ SQLITE_VERSION := 3460000
 SRC_DIR = src
 DIST_DIR = dist
 
+# Determine platform-specific variables
+ifeq ($(OS),Windows_NT)
+    LOAD_SCRIPT = test/inc/load_ext_windows.sql
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Darwin)
+        LOAD_SCRIPT = test/inc/load_ext_darwin.sql
+    else
+        LOAD_SCRIPT = test/inc/load_ext_linux.sql
+    endif
+endif
+
 prepare-dist:
 	mkdir -p $(DIST_DIR)
 	rm -rf $(DIST_DIR)/*
@@ -36,20 +48,18 @@ compile-macos:
 	gcc -O2 -fPIC -dynamiclib -Isrc src/split_part/*.c -o dist/split_part.dylib
 
 test-all:
-	make test suite=json_equal
-	make test suite=regexp
-	make test suite=split_part
+	@echo "Running tests on all suites"
+	@make test suite=json_equal
+	@make test suite=regexp
+	@make test suite=split_part
 
 # fails if grep does find a failed test case
 test:
-	@sqlite3 < test/$(suite).sql > test.log
+	@echo "Testing suite: $(suite)"
+	@sqlite3 -init $(LOAD_SCRIPT) < test/$(suite).sql > test.log
 	@cat test.log | (! grep -Ex "[0-9_]+.[^1]")
 
 clean:
-	rm -f $(SRC_DIR)/shell.c
-	rm -f $(SRC_DIR)/sqlite3.c
-	rm -f $(SRC_DIR)/sqlite3.h
-	rm -f $(SRC_DIR)/sqlite3ext.h
 	rm -f $(DIST_DIR)/*.so
 	rm -f $(DIST_DIR)/*.dll
 	rm -f $(DIST_DIR)/*.dylib

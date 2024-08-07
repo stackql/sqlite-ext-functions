@@ -44,6 +44,9 @@ compile-macos-universal: compile-macos-x86 compile-macos-arm64
 	lipo -create -output dist/json_equal.dylib dist/json_equal_x86.dylib dist/json_equal_arm64.dylib
 	lipo -create -output dist/regexp.dylib dist/regexp_x86.dylib dist/regexp_arm64.dylib
 	lipo -create -output dist/split_part.dylib dist/split_part_x86.dylib dist/split_part_arm64.dylib
+	rm -f dist/json_equal_x86.dylib dist/json_equal_arm64.dylib
+	rm -f dist/regexp_x86.dylib dist/regexp_arm64.dylib
+	rm -f dist/split_part_x86.dylib dist/split_part_arm64.dylib
 
 pack-linux:
 	zip -j dist/stackql-sqlite-ext-functions-$(version)-linux-amd64.zip dist/*.so
@@ -51,11 +54,8 @@ pack-linux:
 pack-windows:
 	zip -j dist/stackql-sqlite-ext-functions-$(version)-windows-amd64.zip dist/*.dll
 
-pack-macos-x86:
-	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-x86.zip dist/*x86.dylib
-
-pack-macos-arm64:
-	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-arm64.zip dist/*arm64.dylib
+pack-macos-universal:
+	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-universal.zip dist/*.dylib
 
 test-all:
 	@echo "Running tests on all suites"

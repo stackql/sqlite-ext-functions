@@ -46,6 +46,10 @@ test:
 	@cat test.log | (! grep -Ex "[0-9_]+.[^1]")
 
 clean:
+	rm -f $(SRC_DIR)/shell.c
+	rm -f $(SRC_DIR)/sqlite3.c
+	rm -f $(SRC_DIR)/sqlite3.h
+	rm -f $(SRC_DIR)/sqlite3ext.h
 	rm -f $(DIST_DIR)/*.so
 	rm -f $(DIST_DIR)/*.dll
 	rm -f $(DIST_DIR)/*.dylib

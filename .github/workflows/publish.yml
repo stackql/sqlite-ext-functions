@@ -1,73 +1,84 @@
 name: publish
 
 on:
-    push:
-        tags:
-            - "*"
-    workflow_dispatch:
-
-env:
-    SQLITE_RELEASE_YEAR: "2021"
-    SQLITE_VERSION: "3360000"
-    SQLITE_BRANCH: "3.36"
+  push:
+    tags:
+      - "*" # Trigger on any tag push
+  workflow_dispatch:
 
 jobs:
-    publish:
-        name: Publish for ${{ matrix.os }}
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                include:
-                    - os: ubuntu-20.04
-                    - os: windows-latest
-                    - os: macos-latest
+  publish:
+    name: Publish for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-latest, macos-latest]
 
-        steps:
-            - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Download SQLite sources
-              shell: bash
-              run: |
-                  make prepare-dist
-                  make download-sqlite
-                  make download-external
+      - name: Extract version from tag
+        id: extract_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-            - name: Build for Linux
-              if: matrix.os == 'ubuntu-20.04'
-              run: |
-                  sudo apt update
-                  sudo apt install -y gcc-aarch64-linux-gnu
-                  make compile-linux-x86
-                  make compile-linux-arm64
-                  make pack-linux
+      - name: Install dependencies on Linux
+        if: matrix.os == 'ubuntu-20.04'
+        run: sudo apt-get install -y sqlite3 gcc unzip gcc-aarch64-linux-gnu
 
-            - name: Install MSYS2 and 'mingw-w64-i686-toolchain'
-              if: matrix.os == 'windows-latest'
-              uses: msys2/setup-msys2@v2
-              with:
-                  cache: true
-                  install: mingw-w64-i686-toolchain
-                  update: true
+      - name: Install dependencies on Windows
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          choco install -y mingw
+          choco install -y unzip
+          choco install -y sqlite
 
-            - name: Build for Windows
-              if: matrix.os == 'windows-latest'
-              shell: bash
-              run: |
-                  $RUNNER_TEMP/msys64/msys2_shell.cmd -defterm -no-start -mingw32 -lc "mingw32-make compile-windows-x86"
-                  make compile-windows
-                  make pack-windows
+      - name: Install dependencies on macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install unzip
+          brew install sqlite
+          brew link sqlite --force
 
-            - name: Build for macOS
-              if: matrix.os == 'macos-latest'
-              run: |
-                  make compile-macos-x86
-                  make compile-macos-arm64
-                  make pack-macos
+      - name: Download and prepare sources
+        run: |
+          make prepare-dist
+          make download-sqlite
 
-            - name: Upload binaries to release
-              uses: svenstaro/upload-release-action@v2
-              with:
-                  repo_token: ${{ secrets.GITHUB_TOKEN }}
-                  file: dist/*.zip
-                  file_glob: true
-                  tag: ${{ github.ref }}
+      - name: Build for Linux
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          make compile-linux-x86
+          make compile-linux-arm64
+          make pack-linux version=${{ env.VERSION }}
+
+      - name: Install MSYS2 and 'mingw-w64-i686-toolchain'
+        if: matrix.os == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: mingw-w64-i686-toolchain
+          msystem: MINGW32
+
+      - name: Build for Windows
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          make compile-windows-x86
+          make compile-windows
+          make pack-windows version=${{ env.VERSION }}
+
+      - name: Build for macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          make compile-macos-x86
+          make compile-macos-arm64
+          make pack-macos version=${{ env.VERSION }}
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/*.zip
+          file_glob: true
+          tag: ${{ github.ref_name }}

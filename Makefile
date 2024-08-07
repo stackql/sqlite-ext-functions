@@ -35,6 +35,15 @@ compile-macos:
 	gcc -O2 -fPIC -dynamiclib -Isrc src/regexp/*.c -o dist/regexp.dylib
 	gcc -O2 -fPIC -dynamiclib -Isrc src/split_part/*.c -o dist/split_part.dylib
 
+pack-linux:
+	zip -j dist/stackql-sqlite-ext-functions-$(version)-linux-amd64.zip dist/*.so
+
+pack-windows:
+	zip -j dist/stackql-sqlite-ext-functions-$(version)-windows-amd64.zip dist/*.dll
+
+pack-macos:
+	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-amd64.zip dist/*.dylib
+
 test-all:
 	@echo "Running tests on all suites"
 	@make test suite=json_equal

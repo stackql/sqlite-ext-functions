@@ -49,13 +49,13 @@ compile-macos-universal: compile-macos-x86 compile-macos-arm64
 	rm -f dist/split_part_x86.dylib dist/split_part_arm64.dylib
 
 pack-linux:
-	zip -j dist/stackql-sqlite-ext-functions-$(version)-linux-amd64.zip dist/*.so
+	zip -j dist/stackql-sqlite-ext-functions-linux-amd64.zip dist/*.so
 
 pack-windows:
-	zip -j dist/stackql-sqlite-ext-functions-$(version)-windows-amd64.zip dist/*.dll
+	zip -j dist/stackql-sqlite-ext-functions-windows-amd64.zip dist/*.dll
 
 pack-macos-universal:
-	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-universal.zip dist/*.dylib
+	zip -j dist/stackql-sqlite-ext-functions-macos-universal.zip dist/*.dylib
 
 test-all:
 	@echo "Running tests on all suites"

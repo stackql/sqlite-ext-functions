@@ -1,4 +1,4 @@
-.load ./dist/json_equal
+.load './dist/json_equal'
 
 -- Test for identical JSON objects
 select '2_01', json_equal('{"key": "value"}', '{"key": "value"}') = 1;

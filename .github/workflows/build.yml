@@ -37,9 +37,9 @@ jobs:
       - name: Install dependencies on macOS
         if: matrix.os == 'macos-latest'
         run: |
-            brew install unzip
-            brew install sqlite
-            brew link sqlite --force
+          brew install unzip
+          brew install sqlite
+          brew link sqlite --force
 
       - name: Download and prepare sources
         run: |
@@ -57,11 +57,11 @@ jobs:
         shell: pwsh
         run: |
           make compile-windows
-          sqlite3.exe -init test/inc/load_ext_windows.sql < test/json_equal.sql > test.log
+          Get-Content test/json_equal.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
-          sqlite3.exe -init test/inc/load_ext_windows.sql < test/regexp.sql > test.log
+          Get-Content test/regexp.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
-          sqlite3.exe -init test/inc/load_ext_windows.sql < test/split_part.sql > test.log
+          Get-Content test/split_part.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
 
       - name: Compile and test on macOS

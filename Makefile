@@ -30,10 +30,15 @@ compile-windows:
 	gcc -O2 -shared -Isrc src/regexp/*.c -o dist/regexp.dll
 	gcc -O2 -shared -Isrc src/split_part/*.c -o dist/split_part.dll
 
-compile-macos:
-	gcc -O2 -fPIC -dynamiclib -Isrc src/json_equal/*.c -o dist/json_equal.dylib
-	gcc -O2 -fPIC -dynamiclib -Isrc src/regexp/*.c -o dist/regexp.dylib
-	gcc -O2 -fPIC -dynamiclib -Isrc src/split_part/*.c -o dist/split_part.dylib
+compile-macos-x86:
+	gcc -O2 -fPIC -dynamiclib -Isrc -target x86_64-apple-macos12 src/json_equal/*.c -o dist/json_equal_x86.dylib
+	gcc -O2 -fPIC -dynamiclib -Isrc -target x86_64-apple-macos12 src/regexp/*.c -o dist/regexp_x86.dylib
+	gcc -O2 -fPIC -dynamiclib -Isrc -target x86_64-apple-macos12 src/split_part/*.c -o dist/split_part_x86.dylib
+
+compile-macos-arm64:
+	gcc -O2 -fPIC -dynamiclib -Isrc -target arm64-apple-macos12 src/json_equal/*.c -o dist/json_equal_arm64.dylib
+	gcc -O2 -fPIC -dynamiclib -Isrc -target arm64-apple-macos12 src/regexp/*.c -o dist/regexp_arm64.dylib
+	gcc -O2 -fPIC -dynamiclib -Isrc -target arm64-apple-macos12 src/split_part/*.c -o dist/split_part_arm64.dylib
 
 pack-linux:
 	zip -j dist/stackql-sqlite-ext-functions-$(version)-linux-amd64.zip dist/*.so
@@ -41,8 +46,11 @@ pack-linux:
 pack-windows:
 	zip -j dist/stackql-sqlite-ext-functions-$(version)-windows-amd64.zip dist/*.dll
 
-pack-macos:
-	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-amd64.zip dist/*.dylib
+pack-macos-x86:
+	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-x86.zip dist/*x86.dylib
+
+pack-macos-arm64:
+	zip -j dist/stackql-sqlite-ext-functions-$(version)-macos-arm64.zip dist/*arm64.dylib
 
 test-all:
 	@echo "Running tests on all suites"

@@ -159,6 +159,10 @@ static void regexp_substr(sqlite3_context *context, int argc, sqlite3_value **ar
     }
 }
 
+#ifdef _WIN32
+__declspec(dllexport)
+#endif
+
 int sqlite3_regexp_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
     SQLITE_EXTENSION_INIT2(pApi)
     int rc = SQLITE_OK;

@@ -59,6 +59,10 @@ static void json_equal(sqlite3_context *context, int argc, sqlite3_value **argv)
     sqlite3_result_int(context, result);
 }
 
+#ifdef _WIN32
+__declspec(dllexport)
+#endif
+
 int sqlite3_jsonequal_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi) {
     SQLITE_EXTENSION_INIT2(pApi)
     sqlite3_create_function(db, "json_equal", 2, SQLITE_UTF8, NULL, json_equal, NULL, NULL);

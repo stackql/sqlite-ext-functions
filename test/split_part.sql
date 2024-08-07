@@ -1,7 +1,7 @@
 -- Copyright (c) 2024 StackQL Studios, MIT License
 -- https://github.com/stackql
 
-.load ./dist/split_part
+.load dist/split_part
 
 -- Test for null inputs
 select '1_01', split_part(null, '/', 1) is null;

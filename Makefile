@@ -9,18 +9,6 @@ SQLITE_VERSION := 3460000
 SRC_DIR = src
 DIST_DIR = dist
 
-# Determine platform-specific variables
-ifeq ($(OS),Windows_NT)
-    LOAD_SCRIPT = test/inc/load_ext_windows.sql
-else
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Darwin)
-        LOAD_SCRIPT = test/inc/load_ext_darwin.sql
-    else
-        LOAD_SCRIPT = test/inc/load_ext_linux.sql
-    endif
-endif
-
 prepare-dist:
 	mkdir -p $(DIST_DIR)
 	rm -rf $(DIST_DIR)/*
@@ -56,7 +44,6 @@ test-all:
 # fails if grep does find a failed test case
 test:
 	@echo "Testing suite: $(suite)"
-	# @sqlite3 -init $(LOAD_SCRIPT) < test/$(suite).sql > test.log
 	@sqlite3 < test/$(suite).sql > test.log
 	@cat test.log | (! grep -Ex "[0-9_]+.[^1]")
 

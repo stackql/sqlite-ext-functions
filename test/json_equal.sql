@@ -1,3 +1,6 @@
+-- Copyright (c) 2024 StackQL Studios, MIT License
+-- https://github.com/stackql
+
 .load dist/json_equal
 
 -- Test for identical JSON objects

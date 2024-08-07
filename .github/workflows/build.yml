@@ -36,7 +36,9 @@ jobs:
 
       - name: Install dependencies on macOS
         if: matrix.os == 'macos-latest'
-        run: brew install gcc sqlite3 unzip
+        run: |
+            brew install unzip
+            brew reinstall gcc sqlite3
 
       - name: Download and prepare sources
         run: |

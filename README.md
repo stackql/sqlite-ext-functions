@@ -1,3 +1,13 @@
+<a href="https://sqlpkg.org/?q=stackql/json_equal">
+    <img src="https://img.shields.io/badge/sqlpkg-stackql/json_equal-blue">
+</a>
+<a href="https://github.com/stackql/sqlite-ext-functions/actions/workflows/build.yml">
+    <img src="https://github.com/stackql/sqlite-ext-functions/actions/workflows/build.yml/badge.svg" alt="Build Status">
+</a>
+<a href="https://github.com/stackql/sqlite-ext-functions/actions/workflows/publish.yml">
+    <img src="https://github.com/stackql/sqlite-ext-functions/actions/workflows/publish.yml/badge.svg" alt="Publish Status">
+</a>
+
 # SQLite Extended Functions for StackQL
 
 Extended SQLite functions for StackQL providing additional capabilities for JSON manipulation, regular expressions, and string splitting.
@@ -58,6 +68,8 @@ After compilation, you can load the extensions in your SQLite shell using:
 .load '/path/to/dist/regexp'
 .load '/path/to/dist/split_part'
 ```
+
+Alternatively, you can download the extensions from [__sqlpkg__](https://sqlpkg.org/?q=stackql%2Fjson_equal).
 
 ## Usage
 

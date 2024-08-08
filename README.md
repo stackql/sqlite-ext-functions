@@ -1,6 +1,12 @@
 <a href="https://sqlpkg.org/?q=stackql/json_equal">
     <img src="https://img.shields.io/badge/sqlpkg-stackql/json_equal-blue">
 </a>
+<a href="https://sqlpkg.org/?q=stackql/regexp">
+    <img src="https://img.shields.io/badge/sqlpkg-stackql/regexp-blue">
+</a>
+<a href="https://sqlpkg.org/?q=stackql/split_part">
+    <img src="https://img.shields.io/badge/sqlpkg-stackql/split_part-blue">
+</a>
 <a href="https://github.com/stackql/sqlite-ext-functions/actions/workflows/build.yml">
     <img src="https://github.com/stackql/sqlite-ext-functions/actions/workflows/build.yml/badge.svg" alt="Build Status">
 </a>

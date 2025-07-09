@@ -74,10 +74,10 @@ make compile-macos    # For macOS
 After compilation, you can load the extensions in your SQLite shell using:
 
 ```sql
-.load '/path/to/dist/json_equal'
-.load '/path/to/dist/regexp'
-.load '/path/to/dist/split_part'
-.load '/path/to/dist/aws_policy_equal'
+.load 'dist/json_equal'
+.load 'dist/regexp'
+.load 'dist/split_part'
+.load 'dist/aws_policy_equal'
 ```
 
 Alternatively, you can download the extensions from [__sqlpkg__](https://sqlpkg.org/?q=stackql%2Fjson_equal).
@@ -98,6 +98,12 @@ SELECT aws_policy_equal(
   '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:GetObject","s3:PutObject"],"Resource":"*"}]}',
   '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:PutObject","s3:GetObject"],"Resource":"*"}]}'
 ); -- Returns 1 (true)
+
+-- Compare AWS policies which are different
+SELECT aws_policy_equal(
+  '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:GetObject","s3:PutObject"],"Resource":"*"}]}',
+  '{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":["s3:PutObject","s3:GetObject"],"Resource":"*"}]}'
+); -- Returns 0 (false)
 
 -- Compare trust policies with different Principal formats
 SELECT aws_policy_equal(

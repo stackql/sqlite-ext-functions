@@ -7,6 +7,9 @@
 <a href="https://sqlpkg.org/?q=stackql/split_part">
     <img src="https://img.shields.io/badge/sqlpkg-stackql/split_part-blue">
 </a>
+<a href="https://sqlpkg.org/?q=stackql/aws_policy_equal">
+    <img src="https://img.shields.io/badge/sqlpkg-stackql/aws_policy_equal-blue">
+</a>
 <a href="https://github.com/stackql/sqlite-ext-functions/actions/workflows/build.yml">
     <img src="https://github.com/stackql/sqlite-ext-functions/actions/workflows/build.yml/badge.svg" alt="Build Status">
 </a>
@@ -34,6 +37,7 @@ This repository contains a set of extended functions for SQLite designed to enha
 ## Features
 
 - **JSON Functions**: Includes `json_equal` to compare JSON objects and arrays.
+- **AWS Policy Functions**: Includes `aws_policy_equal` to compare AWS IAM policies semantically.
 - **Regular Expression Functions**: Includes `regexp_like`, `regexp_substr`, and `regexp_replace` for pattern matching and manipulation.
 - **String Splitting Function**: Includes `split_part` to split strings based on a separator and retrieve specific parts.
 
@@ -73,6 +77,7 @@ After compilation, you can load the extensions in your SQLite shell using:
 .load '/path/to/dist/json_equal'
 .load '/path/to/dist/regexp'
 .load '/path/to/dist/split_part'
+.load '/path/to/dist/aws_policy_equal'
 ```
 
 Alternatively, you can download the extensions from [__sqlpkg__](https://sqlpkg.org/?q=stackql%2Fjson_equal).
@@ -85,7 +90,21 @@ Alternatively, you can download the extensions from [__sqlpkg__](https://sqlpkg.
 SELECT json_equal('{"key": "value"}', '{"key": "value"}'); -- Returns 1 (true)
 SELECT json_equal('[1, 2, 3]', '[3, 2, 1]'); -- Returns 0 (false)
 ```
+### AWS Policy Functions
 
+```sql
+-- Compare AWS policies with different element ordering
+SELECT aws_policy_equal(
+  '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:GetObject","s3:PutObject"],"Resource":"*"}]}',
+  '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:PutObject","s3:GetObject"],"Resource":"*"}]}'
+); -- Returns 1 (true)
+
+-- Compare trust policies with different Principal formats
+SELECT aws_policy_equal(
+  '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789012:role/role1"},"Action":"sts:AssumeRole"}]}',
+  '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["arn:aws:iam::123456789012:role/role1"]},"Action":"sts:AssumeRole"}]}'
+); -- Returns 1 (true)
+```
 ### Regular Expression Functions
 
 ```sql
@@ -118,6 +137,10 @@ Clean the distribution directory and test logs:
 ```bash
 make clean
 ```
+
+### Publishing to `sqlpkg`
+
+To publish new functions to [`sqlpkg`](https://sqlpkg.org/), raise a PR to [nalgeon/sqlpkg](https://github.com/nalgeon/sqlpkg) adding the new function manifest JSON files.
 
 ## License
 

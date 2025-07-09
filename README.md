@@ -146,7 +146,11 @@ make clean
 
 ### Publishing to `sqlpkg`
 
-To publish new functions to [`sqlpkg`](https://sqlpkg.org/), raise a PR to [nalgeon/sqlpkg](https://github.com/nalgeon/sqlpkg) adding the new function manifest JSON files.
+To publish new functions to [`sqlpkg`](https://sqlpkg.org/)  
+
+- Push a tag matching the version in the `.json` files in the `sqlpkg` directory
+- Create a release from the tag pushed
+- Raise a PR to [nalgeon/sqlpkg](https://github.com/nalgeon/sqlpkg) adding the new function manifest JSON files
 
 ## License
 

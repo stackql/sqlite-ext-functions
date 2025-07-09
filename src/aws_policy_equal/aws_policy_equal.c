@@ -26,12 +26,15 @@
 ** This function is part of the StackQL extension suite for SQLite, providing AWS policy comparison capabilities.
 */
 
+#include <math.h>
+#include <float.h>
+#include <string.h>
+#include <ctype.h>
+
 #include <sqlite3ext.h>
 SQLITE_EXTENSION_INIT1
 
 #include "cJSON.h"
-#include <string.h>
-#include <ctype.h>
 
 // List of fields that should be compared as unordered sets
 static const char *unordered_arrays[] = {
@@ -71,7 +74,7 @@ static int aws_service_compare(const char *str1, const char *str2) {
 }
 
 // Find an element in an array by value (for unordered comparison)
-static cJSON *find_matching_element(cJSON *array, cJSON *item, int parent_is_unordered) {
+static cJSON *find_matching_element(const cJSON *array, const cJSON *item, int parent_is_unordered) {
     cJSON *element;
     
     // Nothing to find in empty arrays
@@ -208,8 +211,16 @@ static cJSON_bool aws_policy_compare_items(const cJSON *a, const cJSON *b, int p
     }
 }
 
-// Forward declaration
+// Forward declarations
 static cJSON_bool aws_policy_compare_items(const cJSON *a, const cJSON *b, int parent_is_unordered);
+static cJSON *find_matching_element(const cJSON *array, const cJSON *item, int parent_is_unordered);
+static cJSON_bool compare_double(double a, double b);
+
+// Compare doubles with appropriate epsilon
+static cJSON_bool compare_double(double a, double b) {
+    double maxVal = fabs(a) > fabs(b) ? fabs(a) : fabs(b);
+    return (fabs(a - b) <= maxVal * DBL_EPSILON);
+}
 
 static void aws_policy_equal(sqlite3_context *context, int argc, sqlite3_value **argv) {
     if (argc != 2) {

@@ -67,10 +67,17 @@ jobs:
           Get-Content test/json_equal.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
           Write-Host "json_equal tests completed successfully." 
+          
+          Write-Host "Running aws_policy_equal tests..."
+          Get-Content test/aws_policy_equal.sql | sqlite3.exe | Out-File -FilePath test.log
+          if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
+          Write-Host "aws_policy_equal tests completed successfully."
+          
           Write-Host "Running regexp tests..."
           Get-Content test/regexp.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }
           Write-Host "regexp tests completed successfully." 
+          
           Write-Host "Running split_part tests..."
           Get-Content test/split_part.sql | sqlite3.exe | Out-File -FilePath test.log
           if (Select-String -Path test.log -Pattern '^[0-9_]+.[^1]$') { throw 'Test failed' }

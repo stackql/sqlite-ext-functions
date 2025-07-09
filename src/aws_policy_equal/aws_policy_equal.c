@@ -44,6 +44,9 @@ static const char *unordered_arrays[] = {
 // Count of unordered array fields
 #define UNORDERED_ARRAYS_COUNT (sizeof(unordered_arrays) / sizeof(unordered_arrays[0]))
 
+// Forward declarations
+static cJSON_bool aws_policy_compare_items(const cJSON *a, const cJSON *b, int parent_is_unordered);
+
 // Check if a field name is in the list of unordered arrays
 static int is_unordered_array(const char *field_name) {
     for (int i = 0; i < UNORDERED_ARRAYS_COUNT; i++) {
@@ -71,6 +74,12 @@ static int aws_service_compare(const char *str1, const char *str2) {
     }
     
     return *str1 == *str2;
+}
+
+// Compare doubles with appropriate epsilon
+static cJSON_bool compare_double(double a, double b) {
+    double maxVal = fabs(a) > fabs(b) ? fabs(a) : fabs(b);
+    return (fabs(a - b) <= maxVal * DBL_EPSILON);
 }
 
 // Find an element in an array by value (for unordered comparison)
@@ -209,17 +218,6 @@ static cJSON_bool aws_policy_compare_items(const cJSON *a, const cJSON *b, int p
         default:
             return 0;
     }
-}
-
-// Forward declarations
-static cJSON_bool aws_policy_compare_items(const cJSON *a, const cJSON *b, int parent_is_unordered);
-static cJSON *find_matching_element(const cJSON *array, const cJSON *item, int parent_is_unordered);
-static cJSON_bool compare_double(double a, double b);
-
-// Compare doubles with appropriate epsilon
-static cJSON_bool compare_double(double a, double b) {
-    double maxVal = fabs(a) > fabs(b) ? fabs(a) : fabs(b);
-    return (fabs(a - b) <= maxVal * DBL_EPSILON);
 }
 
 static void aws_policy_equal(sqlite3_context *context, int argc, sqlite3_value **argv) {

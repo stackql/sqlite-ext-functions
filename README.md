@@ -138,6 +138,10 @@ Clean the distribution directory and test logs:
 make clean
 ```
 
+### Publishing to `sqlpkg`
+
+To publish new functions to [`sqlpkg`](https://sqlpkg.org/), raise a PR to [nalgeon/sqlpkg](https://github.com/nalgeon/sqlpkg) adding the new function manifest JSON files.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

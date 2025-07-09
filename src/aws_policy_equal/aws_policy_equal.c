@@ -110,7 +110,28 @@ static cJSON_bool aws_policy_compare_items(const cJSON *a, const cJSON *b, int p
     }
     
     // If either is NULL or they have different types, they're not equal
-    if ((a == NULL) || (b == NULL) || ((a->type & 0xFF) != (b->type & 0xFF))) {
+    if ((a == NULL) || (b == NULL)) {
+        return 0;
+    }
+    
+    // Special case for comparing array with single value
+    if (((a->type & 0xFF) == cJSON_Array && (b->type & 0xFF) == cJSON_String) ||
+        ((a->type & 0xFF) == cJSON_String && (b->type & 0xFF) == cJSON_Array)) {
+        
+        const cJSON *array = ((a->type & 0xFF) == cJSON_Array) ? a : b;
+        const cJSON *string = ((a->type & 0xFF) == cJSON_String) ? a : b;
+        
+        // Only valid if array has exactly one element
+        if (cJSON_GetArraySize(array) != 1) {
+            return 0;
+        }
+        
+        // Compare the single array element with the string
+        return aws_policy_compare_items(cJSON_GetArrayItem(array, 0), string, parent_is_unordered);
+    }
+    
+    // Normal case - types must match
+    if ((a->type & 0xFF) != (b->type & 0xFF)) {
         return 0;
     }
     

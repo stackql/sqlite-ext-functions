@@ -30,6 +30,7 @@
 #include <float.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #include <sqlite3ext.h>
 SQLITE_EXTENSION_INIT1
@@ -130,8 +131,43 @@ static cJSON_bool aws_policy_compare_items(const cJSON *a, const cJSON *b, int p
         return aws_policy_compare_items(cJSON_GetArrayItem(array, 0), string, parent_is_unordered);
     }
     
-    // Normal case - types must match
+    // Handle type coercion: AWS and other services inconsistently represent values as
+    // strings, numbers, or booleans (e.g. IpProtocol "-1" vs -1, "true" vs true).
+    // Treat these as equivalent when the string representation matches the value.
     if ((a->type & 0xFF) != (b->type & 0xFF)) {
+        int a_type = a->type & 0xFF;
+        int b_type = b->type & 0xFF;
+
+        // number vs string
+        if (a_type == cJSON_Number && b_type == cJSON_String && b->valuestring != NULL) {
+            char *endptr;
+            double b_val = strtod(b->valuestring, &endptr);
+            return (endptr != b->valuestring && *endptr == '\0') && compare_double(a->valuedouble, b_val);
+        }
+        if (a_type == cJSON_String && b_type == cJSON_Number && a->valuestring != NULL) {
+            char *endptr;
+            double a_val = strtod(a->valuestring, &endptr);
+            return (endptr != a->valuestring && *endptr == '\0') && compare_double(a_val, b->valuedouble);
+        }
+
+        // boolean vs string ("true"/"false", case-insensitive)
+        if ((a_type == cJSON_True || a_type == cJSON_False) && b_type == cJSON_String && b->valuestring != NULL) {
+            const char *expected = (a_type == cJSON_True) ? "true" : "false";
+            size_t i;
+            for (i = 0; expected[i]; i++) {
+                if (tolower((unsigned char)b->valuestring[i]) != expected[i]) return 0;
+            }
+            return b->valuestring[i] == '\0';
+        }
+        if (a_type == cJSON_String && (b_type == cJSON_True || b_type == cJSON_False) && a->valuestring != NULL) {
+            const char *expected = (b_type == cJSON_True) ? "true" : "false";
+            size_t i;
+            for (i = 0; expected[i]; i++) {
+                if (tolower((unsigned char)a->valuestring[i]) != expected[i]) return 0;
+            }
+            return a->valuestring[i] == '\0';
+        }
+
         return 0;
     }
     

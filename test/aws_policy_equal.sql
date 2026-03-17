@@ -75,6 +75,42 @@ SELECT '9_01', aws_policy_equal(
     '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:GetObject","Resource":"*"}]}'
 ) = 1;
 
+-- Test for type coercion: number vs string (e.g. security group IpProtocol "-1" vs -1)
+SELECT '11_01', aws_policy_equal(
+    '[{"CidrIp":"0.0.0.0/0","Description":"Allow all outbound traffic","FromPort":-1,"ToPort":-1,"IpProtocol":"-1"}]',
+    '[{"CidrIp":"0.0.0.0/0","Description":"Allow all outbound traffic","FromPort":-1,"IpProtocol":-1,"ToPort":-1}]'
+) = 1;
+
+-- Test for type coercion: string port number vs number
+SELECT '11_02', aws_policy_equal(
+    '[{"FromPort":"80","ToPort":"80","IpProtocol":"tcp"}]',
+    '[{"FromPort":80,"ToPort":80,"IpProtocol":"tcp"}]'
+) = 1;
+
+-- Test for type coercion: boolean vs string (e.g. "true" vs true in conditions)
+SELECT '11_03', aws_policy_equal(
+    '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:*","Resource":"*","Condition":{"Bool":{"aws:SecureTransport":"true"}}}]}',
+    '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:*","Resource":"*","Condition":{"Bool":{"aws:SecureTransport":true}}}]}'
+) = 1;
+
+-- Test for type coercion: false boolean vs string "false"
+SELECT '11_04', aws_policy_equal(
+    '{"enabled":"false"}',
+    '{"enabled":false}'
+) = 1;
+
+-- Test for type coercion: different numeric values should NOT match
+SELECT '11_05', aws_policy_equal(
+    '[{"FromPort":"443","IpProtocol":"tcp"}]',
+    '[{"FromPort":80,"IpProtocol":"tcp"}]'
+) = 0;
+
+-- Test for type coercion: non-numeric string should NOT match a number
+SELECT '11_06', aws_policy_equal(
+    '{"port":"all"}',
+    '{"port":0}'
+) = 0;
+
 -- Test for different order of condition keys
 SELECT '10_01', aws_policy_equal(
     '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:*","Resource":"*","Condition":{"StringEquals":{"aws:username":"johndoe"},"Bool":{"aws:SecureTransport":"true"}}}]}',
